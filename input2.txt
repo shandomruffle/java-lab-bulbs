@@ -1,0 +1,6 @@
+Company 50 7 1
+ICompany 50 7 1
+Company 20 3 2
+Company 60 50 9
+ICompany 20 3 8
+ICompany 60 50 1
