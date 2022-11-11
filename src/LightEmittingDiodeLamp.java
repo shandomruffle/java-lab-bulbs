@@ -15,8 +15,8 @@ public class LightEmittingDiodeLamp extends LightingBulb {
     @Override
     public String toString() {
         return "prod: " + getProducer() +
-                "cost: " + getCost() +
-                "leds: " + getLedsCount();
+                " cost: " + getCost() +
+                " leds: " + getLedsCount(); // add space
     }
 
     public int getLedsCount() {

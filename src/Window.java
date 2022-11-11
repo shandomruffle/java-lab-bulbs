@@ -10,7 +10,6 @@ public class Window extends JFrame {
     private String cur_path;
     private String cur_abs_path;
     private ArrayList<LightingBulb> list;
-    private int type;
     Window() {
         super("Lighting Bulb Analyzer");
 
@@ -38,57 +37,57 @@ public class Window extends JFrame {
         p.setLayout(new GridLayout(1, 2));
         JButton o1 = new JButton("Open type 1");
         o1.addActionListener(a -> {
-            type = 1;
+            parseType1(); // generate list
         });
         JButton o2 = new JButton("Open type 2");
         o2.addActionListener(a -> {
-            type = 2;
+            parseType2(); // generate list
         });
         p.add(o1); p.add(o2);
         add(p);
 
         JButton srt = new JButton("Sort by cost");
         srt.addActionListener(a -> {
-            parse();
+            if (listNotInitialized()) return;
             var res = CollectionProcessor.sortByCost(list);
             StringBuilder o = new StringBuilder();
             res.stream().forEach(l -> {
                 o.append(l.toString() + "\n");
             });
-            output(o.toString());
+            output(o.toString(), "Best cost");
         });
         add(srt);
 
         JButton srt2 = new JButton("Sort by cost/power descending");
         srt2.addActionListener(a -> {
-            parse();
+            if (listNotInitialized()) return;
             var res = CollectionProcessor.sortByCostOverPowerDescending(list);
             StringBuilder o = new StringBuilder();
             res.stream().forEach(l -> {
                 o.append(l.toString() + "\n");
             });
-            output(o.toString());
+            output(o.toString(), "Best for its price");
         });
         add(srt2);
 
         JButton c = new JButton("Producers Starting with \"C\"");
         c.addActionListener(a -> {
-            parse();
+            if (listNotInitialized()) return;
             var res = CollectionProcessor.distinctProducersStartingWithC(list);
             StringBuilder o = new StringBuilder();
             res.stream().forEach(l -> {
                 o.append(l.toString() + "\n");
             });
-            output(o.toString());
+            output(o.toString(), "Producers C*");
         });
         add(c);
 
         JButton avg = new JButton("Average cost of producer");
         avg.addActionListener(a -> {
-            parse();
+            if (listNotInitialized()) return;
             String pr = JOptionPane.showInputDialog("producer");
             var res = CollectionProcessor.averageCostByProducer(list, pr);
-            output(String.valueOf(res));
+            output(String.valueOf(res), "Average cost");
         });
         add(avg);
 
@@ -98,19 +97,20 @@ public class Window extends JFrame {
         setLocationRelativeTo(null);
         setVisible(true);
     }
-
-    private void parse() {
-        if (type == 0) {
-            return;
-        }
-        if (type == 1) parseType1();
-        else parseType2();
+    // remove method parse
+    private boolean listNotInitialized() { // new method
+        if (list != null) return false;
+        JOptionPane.showMessageDialog(this,
+                new JLabel("please open a file"),
+                "Failed",
+                JOptionPane.ERROR_MESSAGE);
+        return true;
     }
 
     private void parseType1() {
         try {
             var b = new BufferedReader(new FileReader(cur_abs_path));
-            list = new ArrayList<LightingBulb>();
+            list = new ArrayList<>();
             b.lines().forEach(l -> {
                 var s = l.split(" ");
                 list.add(new IncandescentLamp(s[0], Integer.parseInt(s[1]), Integer.parseInt(s[2])));
@@ -125,7 +125,7 @@ public class Window extends JFrame {
     private void parseType2() {
         try {
             var b = new BufferedReader(new FileReader(cur_abs_path));
-            list = new ArrayList<LightingBulb>();
+            list = new ArrayList<>();
             b.lines().forEach(l -> {
                 var s = l.split(" ");
                 list.add(new LightEmittingDiodeLamp(s[0], Integer.parseInt(s[1]), Integer.parseInt(s[2])));
@@ -137,11 +137,12 @@ public class Window extends JFrame {
         }
     }
 
-    private void output(String s) {
-        var j = new JFrame("Result");
+    private void output(String s, String window_label) { // add parameter
+        var j = new JFrame(window_label);
         var tf = new JTextArea();
         tf.setText(s);
-        j.setDefaultCloseOperation(EXIT_ON_CLOSE);
+        j.add(tf); // add
+        j.setDefaultCloseOperation(DISPOSE_ON_CLOSE); // not exit
         j.setSize(600, 400);
         j.setVisible(true);
     }

@@ -10,8 +10,8 @@ public class IncandescentLamp extends LightingBulb {
     @Override
     public String toString() {
         return "prod: " + getProducer() +
-                "cost: " + getCost() +
-                "exp: " + getExploitation();
+                " cost: " + getCost() +
+                " exp: " + getExploitation(); // add space
     }
 
     @Override
